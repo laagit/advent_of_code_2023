@@ -1,3 +1,6 @@
+// This is my solution to part 1 of Advent of Code 2023 - Day 7: Camel Cards.
+// You can read the task description and get input data here https://adventofcode.com/2023/day/7
+
 // test case from reddit thread. Output for part 2 should be 6592 ( https://www.reddit.com/r/adventofcode/comments/18cr4xr/2023_day_7_better_example_input_not_a_spoiler/ )
 let read_input = `2345A 1
 Q2KJJ 13
@@ -47,6 +50,7 @@ for (let i=0; i < Object.keys(input).length; i++){
     handvalues = Object.keys(input[i])[0].split("");
     occurrences = {};
 
+    // count occurrences of each card in hand
     handvalues.forEach(x=>{ 
         if (occurrences[x]){
             occurrences[x]+=1;
@@ -54,7 +58,10 @@ for (let i=0; i < Object.keys(input).length; i++){
             occurrences[x] = 1;
         };
     })
+
+    // sort occurrences to easily find hand strength
     sorted = Object.values(occurrences).sort(function(a, b){return b-a})
+
     if (sorted[0] == 5){
         hand_strength[i] = "five_kind";
         continue;
@@ -87,35 +94,34 @@ for (let i=0; i < Object.keys(input).length; i++){
 
     hand_strength[i] = "high_card";
 }
-// sort by hand stregth
-let ordered_hands = Object.keys(hand_strength).sort(function(a, b){return hand_strength_dict[hand_strength[b]]-hand_strength_dict[hand_strength[a]]})
-console.log(ordered_hands)
-ordered_hands.forEach(x=>console.log(hand_strength[x]))
 
-// proper sort func 
 function sort_hands(a, b){
+    // if equal hand strength, sort by individual card strength
     if (hand_strength_dict[hand_strength[a]] == hand_strength_dict[hand_strength[b]]){
         for (i = 0; i < Object.keys(input[a])[0].split("").length; i++){
+            // if individual cards are same strength, try the next card in hand
             if (Object.keys(input[a])[0].split("")[i] == Object.keys(input[b])[0].split("")[i]){
                 if (i < 4){
                     continue
                 } else return 0
+            // compare individual card strength
             } else return card_strength_dict[Object.keys(input[b])[0].split("")[i]] - card_strength_dict[Object.keys(input[a])[0].split("")[i]]
         }
+    // if hand strengths are different, simply sort by hand strength
     } else {
         return hand_strength_dict[hand_strength[b]] - hand_strength_dict[hand_strength[a]]
     }
 }
 
-sorted_ordered_hands = Object.keys(hand_strength).sort(sort_hands).reverse()
-// sorted_ordered_hands = ordered_hands.sort(sort_hands).reverse()
+sorted_hands = Object.keys(hand_strength).sort(sort_hands).reverse()
+
 console.log("hands in ascending order: ")
-console.log(sorted_ordered_hands)
+console.log(sorted_hands)
 
 hand_scores = new Array()
 
-for (i = 0; i < sorted_ordered_hands.length; i++){
-    hand_scores.push((i+1) * Object.values(input[sorted_ordered_hands[i]]))
+for (i = 0; i < sorted_hands.length; i++){
+    hand_scores.push((i+1) * Object.values(input[sorted_hands[i]]))
 }
 console.log("hand scores (rank * bid) in same order :")
 console.log(hand_scores)
